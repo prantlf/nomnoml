@@ -9,8 +9,11 @@
     "uml"
   ],
   "main": "dist/nomnoml.js",
-  "files": ["dist/nomnoml.js"],
+  "files": [
+    "dist/nomnoml.js"
+  ],
   "dependencies": {
+    "dagre": "~0.4.6",
     "lodash": "~3.7.0"
   },
   "devDependencies": {

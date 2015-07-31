@@ -32,7 +32,13 @@
         require.config({
             baseUrl: '../lib',
             paths: {
+              dagre: '../lib/dagre.min',
               lodash: '../lib/lodash.min'
+            },
+            shim: {
+              dagre: {
+                exports: 'dagre'
+              }
             }
         });
         require(['../dist/nomnoml'], function (nomnoml) {
