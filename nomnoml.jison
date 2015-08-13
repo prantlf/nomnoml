@@ -2,7 +2,7 @@
 %%
 
 \s*\|\s*                   return '|'
-[^\]\[|;\n]+               return 'IDENT'
+(\\\[|\\\]|[^\]\[|;\n])+   return 'IDENT'
 "["                        return '['
 \s*\]                      return ']'
 [ ]*(\;|\n)+[ ]*           return 'SEP'
@@ -19,7 +19,7 @@ root
     : compartment EOF      { return $1 };
 
 slot
-  : IDENT                  {$$ = $1.trim();}
+  : IDENT                  {$$ = $1.trim().replace(/\\\[/gm, '[').replace(/\\\]/gm, ']');}
   | class                  {$$ = $1;}
   | association            {$$ = $1;};
 
@@ -34,7 +34,7 @@ parts
 
 association
   : class IDENT class      {
-           var t = $2.trim().match('^(.*?)([<:o+]*-/?-*[:o+>]*)(.*)$');
+           var t = $2.trim().replace(/\\\[/gm, '[').replace(/\\\]/gm, ']').match('^(.*?)([<:o+]*-/?-*[:o+>]*)(.*)$');
            $$ = {assoc:t[2], start:$1, end:$3, startLabel:t[1].trim(), endLabel:t[3].trim()};
   };
 
