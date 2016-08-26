@@ -17,28 +17,34 @@ Created by [Daniel Kallin](https://github.com/skanaar). Contributions by [Alexan
 
 ## Library
 
-The [nomnoml](http://www.nomnoml.com) standalone javascript library can be used to render diagrams on your own web page. The only dependency  is on [lodash](http://lodash.com). Install it using either *npm*, *Bower* or good old script inclusion.
+The [nomnoml](http://www.nomnoml.com) standalone javascript library can be used to render diagrams on your own web page. The only dependencies are [lodash](http://lodash.com) and [dagre](https://github.com/cpettitt/dagre). Install it using either *npm* or good old script inclusion.
+
+NodeJS usage with SVG output:
 
     npm install nomnoml
 
-    bower install https://github.com/skanaar/nomnoml.git
+    var nomnoml = require('nomnoml');
+    var src = '[nomnoml] is -> [awesome]';
+    console.log(nomnoml.renderSvg(src));
 
-    <script src="lodash.js"></script>
-    <script src="nomnoml.js"></script>
-
-And then in your html:
+Html usage with a Canvas rendering target:
 
 ```html
-<script src="my_component_dir/lodash/lodash.js"></script>
-<script src="my_component_dir/nomnoml/dist/nomnoml.js"></script>
+<script src="lodash.js"></script>
+<script src="dagre.js"></script>
+<script src="nomnoml.js"></script>
 
 <canvas id="target-canvas"></canvas>
 <script>
     var canvas = document.getElementById('target-canvas');
-    var source = '[nomnoml]is->[awesome]';
+    var source = '[nomnoml] is -> [awesome]';
     nomnoml.draw(canvas, source);
 </script>
 ```
+
+## SVG support
+
+An experimental (and not fully featured) SVG rendering mode is available as the `nomnoml.renderSvg` function.
 
 ## Web application
 
@@ -84,6 +90,7 @@ This is how the Decorator pattern looks like in nomnoml syntax:
     [name]
     [<abstract> name]
     [<instance> name]
+    [<reference> name]
     [<note> name]
     [<package> name]
     [<frame> name]
@@ -119,6 +126,43 @@ This is how the Decorator pattern looks like in nomnoml syntax:
     #stroke: #33322E
     #title: filename
     #zoom: 1
+
+### Custom classifier styles
+
+A directive that starts with "." define a classifier style.
+
+    #.box: fill=#88ff88
+    #.blob: fill=pink visual=ellipse italic bold dashed
+    [<box> GreenBox]
+    [<blob> HideousBlob]
+
+Available visuals are
+
+    visual=actor
+    visual=class
+    visual=database
+    visual=ellipse
+    visual=end
+    visual=frame
+    visual=hidden
+    visual=input
+    visual=none
+    visual=note
+    visual=package
+    visual=receiver
+    visual=rhomb
+    visual=roundrect
+    visual=sender
+    visual=start
+
+Available modifiers are
+
+    center
+    bold
+    underline
+    italic
+    dashed
+    empty
 
 ## Contributing
 

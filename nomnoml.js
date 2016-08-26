@@ -4,6 +4,20 @@ var nomnoml = nomnoml || {};
 	'use strict';
 
 	function getConfig(d) {
+		var userStyles = {}
+		_.each(d, function (styleDef, key){
+			if (key[0] != '.') return
+			userStyles[key.substring(1).toUpperCase()] = {
+				center: _.contains(styleDef, 'center'),
+				bold: _.contains(styleDef, 'bold'),
+				underline: _.contains(styleDef, 'underline'),
+				italic: _.contains(styleDef, 'italic'),
+				dashed: _.contains(styleDef, 'dashed'),
+				empty: _.contains(styleDef, 'empty'),
+				fill: _.last(styleDef.match('fill=([^ ]*)')),
+				visual: _.last(styleDef.match('visual=([^ ]*)')) || 'box'
+			}
+		})
 		return {
 			arrowSize: +d.arrowSize || 1,
 			bendSize: +d.bendSize || 0.3,
@@ -21,7 +35,8 @@ var nomnoml = nomnoml || {};
 			spacing: (+d.spacing) || 40,
 			stroke: d.stroke || '#33322E',
 			title: d.title || 'nomnoml',
-			zoom: +d.zoom || 1
+			zoom: +d.zoom || 1,
+			styles: userStyles
 		};
 	}
 
@@ -32,10 +47,10 @@ var nomnoml = nomnoml || {};
 
 	function setFont(config, isBold, isItalic, graphics) {
 		var style = (isBold === 'bold' ? 'bold' : '')
-		if (isItalic) style = 'italic' + style
+		if (isItalic) style = 'italic ' + style
 		var defaultFont = 'Helvetica, sans-serif'
 		var font = skanaar.format('# #pt #, #', style, config.fontSize, config.font, defaultFont)
-		graphics.ctx.font = font
+		graphics.font(font)
 	}
 
 	function parseAndRender(code, graphics, canvas, scale) {
@@ -43,7 +58,7 @@ var nomnoml = nomnoml || {};
 		var config = getConfig(ast.directives);
 		var measurer = {
 			setFont: function (a, b, c) { setFont(a, b, c, graphics); },
-			textWidth: function (s) { return graphics.ctx.measureText(s).width },
+			textWidth: function (s) { return graphics.measureText(s).width },
 			textHeight: function () { return config.leading * config.fontSize }
 		};
 		var layout = nomnoml.layout(measurer, config, ast);
@@ -54,7 +69,28 @@ var nomnoml = nomnoml || {};
 	}
 
 	nomnoml.draw = function (canvas, code, scale) {
-		var skCanvas = skanaar.Canvas(canvas)
-		return parseAndRender(code, skCanvas, canvas, scale || 1)
+		return parseAndRender(code, skanaar.Canvas(canvas), canvas, scale || 1)
+	};
+
+	nomnoml.renderSvg = function (code) {
+		var ast = nomnoml.parse(code)
+		var config = getConfig(ast.directives)
+		var skCanvas = skanaar.Svg('')
+		function setFont(config, isBold, isItalic) {
+			var style = (isBold === 'bold' ? 'bold' : '')
+			if (isItalic) style = 'italic ' + style
+			var defFont = 'Helvetica, sans-serif'
+			var template = 'font-weight:#; font-size:#pt; font-family:\'#\', #'
+			var font = skanaar.format(template, style, config.fontSize, config.font, defFont)
+			skCanvas.font(font)
+		}
+		var measurer = {
+			setFont: function (a, b, c) { setFont(a, b, c, skCanvas); },
+			textWidth: function (s) { return skCanvas.measureText(s).width },
+			textHeight: function () { return config.leading * config.fontSize }
+		};
+		var layout = nomnoml.layout(measurer, config, ast)
+		nomnoml.render(skCanvas, config, layout, measurer.setFont)
+		return skCanvas.serialize()
 	};
 })();
