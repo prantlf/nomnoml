@@ -14,8 +14,8 @@
     "dist/nomnoml-cli.js"
   ],
   "dependencies": {
-    "lodash": "4.17.4",
-    "dagre": "0.7.x"
+    "lodash": "~3.7.0",
+    "dagre": "0.4.x"
   },
   "devDependencies": {
     "canvas": "1.6.5",
