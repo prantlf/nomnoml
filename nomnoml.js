@@ -15,7 +15,7 @@ var nomnoml = nomnoml || {};
 				dashed: _.contains(styleDef, 'dashed'),
 				empty: _.contains(styleDef, 'empty'),
 				fill: _.last(styleDef.match('fill=([^ ]*)')),
-				visual: _.last(styleDef.match('visual=([^ ]*)')) || 'box'
+				visual: _.last(styleDef.match('visual=([^ ]*)')) || 'class'
 			}
 		})
 		return {
@@ -36,7 +36,7 @@ var nomnoml = nomnoml || {};
 			stroke: d.stroke || '#33322E',
 			title: d.title || 'nomnoml',
 			zoom: +d.zoom || 1,
-			styles: userStyles
+			styles: _.extend({}, nomnoml.styles, userStyles)
 		};
 	}
 
@@ -91,6 +91,9 @@ var nomnoml = nomnoml || {};
 		};
 		var layout = nomnoml.layout(measurer, config, ast)
 		nomnoml.render(skCanvas, config, layout, measurer.setFont)
-		return skCanvas.serialize()
+		return skCanvas.serialize({
+		  width: layout.width,
+		  height: layout.height
+		})
 	};
 })();
