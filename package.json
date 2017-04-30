@@ -14,12 +14,12 @@
     "dist/nomnoml-cli.js"
   ],
   "dependencies": {
-    "lodash": "~3.7.0",
-    "dagre": "0.4.x"
+    "lodash": "4.17.4",
+    "dagre": "0.7.x"
   },
   "devDependencies": {
-    "canvas": "1.2.7",
-    "jison": "0.4.13"
+    "canvas": "1.6.5",
+    "jison": "0.4.17"
   },
   "scripts": {
     "build": "node build",
